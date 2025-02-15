@@ -2,18 +2,19 @@
 
 public class TextBoxField : FormElementBase
 {
-    private static int serial = 0;
-
     private INamedValue peerValue;
-
-    public NamedValue<string> Value { get; private set; } = new($"field{serial++}");
 
     public TextBoxField(IFormRegion region) : base(region)
     {
     }
 
+    public NamedValue<string> Value { get; private set; }
+
+    public bool ValuesSame { get; set; }
+
     public override void Create()
     {
+        Value = new(Parent.NamingContext?.GetUniqueName("field") ?? "field");
         AddNamedValue(Value);
     }
 
@@ -29,8 +30,6 @@ public class TextBoxField : FormElementBase
 
         await RecalculateState();
     }
-
-    public bool ValuesSame { get; set; }
 
     private async Task RecalculateState()
     {
