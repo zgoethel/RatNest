@@ -1,0 +1,34 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.12.35707.178
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RatNest", "RatNest\RatNest.csproj", "{E9C224B1-F939-466E-85C2-7F5E1772FBA6}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RatNest.Test", "RatNest.Test\RatNest.Test\RatNest.Test.csproj", "{45D2BF4F-11BC-496A-8DE2-56FAB864ECC5}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RatNest.Test.Client", "RatNest.Test\RatNest.Test.Client\RatNest.Test.Client.csproj", "{05FEEC20-7A33-41DD-B9AD-234E7BC8A4EE}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{E9C224B1-F939-466E-85C2-7F5E1772FBA6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E9C224B1-F939-466E-85C2-7F5E1772FBA6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E9C224B1-F939-466E-85C2-7F5E1772FBA6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E9C224B1-F939-466E-85C2-7F5E1772FBA6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{45D2BF4F-11BC-496A-8DE2-56FAB864ECC5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{45D2BF4F-11BC-496A-8DE2-56FAB864ECC5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{45D2BF4F-11BC-496A-8DE2-56FAB864ECC5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{45D2BF4F-11BC-496A-8DE2-56FAB864ECC5}.Release|Any CPU.Build.0 = Release|Any CPU
+		{05FEEC20-7A33-41DD-B9AD-234E7BC8A4EE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{05FEEC20-7A33-41DD-B9AD-234E7BC8A4EE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{05FEEC20-7A33-41DD-B9AD-234E7BC8A4EE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{05FEEC20-7A33-41DD-B9AD-234E7BC8A4EE}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal

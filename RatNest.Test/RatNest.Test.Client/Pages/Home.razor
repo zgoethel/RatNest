@@ -1,0 +1,24 @@
+﻿@page "/"
+
+<PageTitle>Home</PageTitle>
+
+<h1>Hello, world!</h1>
+
+Welcome to your new app.
+
+<CascadingValue TValue="IFormRegion" Value="@region">
+
+    <div style="display: flex;
+                flex-direction: row;">
+
+        <TextBoxView />
+
+        <TextBoxView />
+
+    </div>
+
+</CascadingValue>
+
+@code {
+    private FormRegion region = new(null);
+}

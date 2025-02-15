@@ -1,0 +1,49 @@
+﻿<div style="display: flex;
+            flex-direction: column;">
+
+    <label>@(field.Value.Name):</label>
+
+    <InputText Value="@field.Value.Value"
+        ValueExpression="@(() => field.Value.Value)"
+        ValueChanged="@field.Value.SetValue" />
+
+    <i>(ID: @(field.Value.RefId))</i>
+
+    @if (field.ValuesSame)
+    {
+        <span>Values are the same.</span>
+    }
+
+</div>
+
+@code {
+    [CascadingParameter]
+    public IFormRegion Parent { get; set; }
+
+    private TextBoxField field;
+
+    protected override void OnInitialized()
+    {
+        base.OnInitialized();
+
+        field = new(Parent);
+        field.ValueChanged += async () => await InvokeAsync(StateHasChanged);
+        field.StateChanged += async () => await InvokeAsync(StateHasChanged);
+
+        if (Parent is FormRegion area)
+        {
+            //TODO Add automatically in field constructor?
+            area.AddElement(field);
+        }
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        await base.OnAfterRenderAsync(firstRender);
+
+        if (firstRender)
+        {
+            await field.Initialize();
+        }
+    }
+}
