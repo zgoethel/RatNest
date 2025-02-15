@@ -101,14 +101,12 @@ public class FormRegion : FormElementBase, IFormRegion
         ValueRemoved?.Invoke(value);
     }
 
-    public NamingContext CreateNamingContext()
+    public void CreateNamingContext()
     {
         NamingContext = new();
 
         ValueAdded += NamingContext.AddValue;
         ValueRemoved += NamingContext.RemoveValue;
-
-        return NamingContext;
     }
 }
 
@@ -124,7 +122,7 @@ public static class FormRegionExtensions
 
     public static IFormRegion GetTopLevel(this IFormRegion region)
     {
-        for (; region?.Parent is not null; region = region.Parent) ;
+        for (; region?.Parent is not null; region = region.Parent);
 
         return region;
     }
@@ -135,10 +133,22 @@ public static class FormRegionExtensions
             .GetTopLevel()
             .GetAllValues();
     }
+
     public static IEnumerable<FormElementBase> GetAllElements(this IFormRegion region)
     {
         return region.Elements
             .Union(region.ChildRegions
                 .SelectMany((it) => it.GetAllElements()));
+    }
+
+    public static bool IsEffectivelyVisible(this IFormRegion region)
+    {
+        ArgumentNullException.ThrowIfNull(region, nameof(region));
+
+        for (;
+            region is not null && region.IsVisible;
+            region = region.Parent);
+
+        return region is null;
     }
 }

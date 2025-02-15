@@ -7,6 +7,10 @@
         ValueExpression="@(() => field.Value.Value)"
         ValueChanged="@field.Value.SetValue" />
 
+    <InputText Value="@field.Value.Name"
+        ValueExpression="@(() => field.Value.Name)"
+        ValueChanged="@Rename" />
+
     <i>(ID: @(field.Value.RefId))</i>
 
     @if (field.ValuesSame)
@@ -44,5 +48,14 @@
         {
             await field.Initialize();
         }
+    }
+
+    private void Rename(string newName)
+    {
+        newName = Parent.NamingContext.GetUniqueName(
+            newName,
+            excludeRefId: field.Value.RefId);
+
+        field.Value.Rename(newName);
     }
 }
