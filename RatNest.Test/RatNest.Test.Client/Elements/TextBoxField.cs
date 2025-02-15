@@ -1,4 +1,4 @@
-﻿namespace RatNest.Test.Client;
+﻿namespace RatNest.Test.Client.Elements;
 
 public class TextBoxField : FormElementBase
 {
@@ -35,7 +35,7 @@ public class TextBoxField : FormElementBase
     private async Task RecalculateState()
     {
         var oldValuesSame = ValuesSame;
-        ValuesSame = (peerValue.Value as string) == Value.Value as string;
+        ValuesSame = peerValue.Value as string == Value.Value as string;
 
         if (oldValuesSame != ValuesSame)
         {
