@@ -18,7 +18,7 @@ public class TextBoxField : FormElementBase
         AddNamedValue(Value);
     }
 
-    public async Task Initialize()
+    public override async Task Initialize()
     {
         (_, peerValue) = Parent
             .NamingContext

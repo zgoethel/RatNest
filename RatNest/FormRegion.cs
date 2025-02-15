@@ -44,6 +44,14 @@ public class FormRegion : FormElementBase, IFormRegion
         }
     }
 
+    public override async Task Initialize()
+    {
+        foreach (var element in Elements)
+        {
+            await element.Initialize();
+        }
+    }
+
     private NamingContext namingContext;
     public NamingContext NamingContext
     {

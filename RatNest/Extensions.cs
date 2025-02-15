@@ -8,7 +8,9 @@ public static class Extensions
         {
             return;
         }
-        foreach (Func<Task> func in handler.GetInvocationList())
+        foreach (Func<Task> func in handler
+            .GetInvocationList()
+            .Cast<Func<Task>>())
         {
             await func();
         }
@@ -20,7 +22,9 @@ public static class Extensions
         {
             return;
         }
-        foreach (Func<T, Task> func in handler.GetInvocationList())
+        foreach (Func<T, Task> func in handler
+            .GetInvocationList()
+            .Cast<Func<T, Task>>())
         {
             await func(value);
         }

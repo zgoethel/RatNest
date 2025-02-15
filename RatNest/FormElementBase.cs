@@ -13,6 +13,8 @@ public abstract class FormElementBase
 
     public abstract void Create();
 
+    public abstract Task Initialize();
+
     public IFormRegion Parent { get; private set; }
 
     private readonly List<INamedValue> values = new();

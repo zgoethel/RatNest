@@ -21,4 +21,14 @@ Welcome to your new app.
 
 @code {
     private FormRegion region = new(null, topLevel: true);
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        await base.OnAfterRenderAsync(firstRender);
+
+        if (firstRender)
+        {
+            await region.Initialize();
+        }
+    }
 }
