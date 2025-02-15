@@ -2,7 +2,11 @@
 
 public interface INamedValue
 {
-    string Name { get; set; }
+    string Name { get; }
+
+    void Rename(string newName);
+
+    event Action<string, string> Renamed;
 
     Guid RefId { get; }
 
@@ -24,7 +28,17 @@ public class NamedValue<T> : INamedValue
         Value = value;
     }
 
-    public string Name { get; set; }
+    public string Name { get; private set; }
+
+    public void Rename(string newName)
+    {
+        var oldName = Name;
+        Name = newName;
+
+        Renamed?.Invoke(oldName, newName);
+    }
+
+    public event Action<string, string> Renamed;
 
     public Guid RefId { get; private set; }
 

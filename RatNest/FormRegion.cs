@@ -4,32 +4,111 @@ public interface IFormRegion
 {
     IFormRegion Parent { get; }
 
+    NamingContext NamingContext { get; }
+
     bool IsVisible { get; }
 
     IEnumerable<IFormRegion> ChildRegions { get; }
 
-    IEnumerable<FormElementBase> Elements { get; }
+    IReadOnlyList<FormElementBase> Elements { get; }
+
+    void AddElement(FormElementBase element);
+
+    bool RemoveElement(FormElementBase element);
+
+    event Action<INamedValue> ValueAdded;
+
+    event Action<INamedValue> ValueRemoved;
+
+    public void InvokeValueAdded(INamedValue value);
+
+    public void InvokeValueRemoved(INamedValue value);
 }
 
-public class FormRegion : IFormRegion
+public class FormRegion : FormElementBase, IFormRegion
 {
-    public FormRegion(IFormRegion parent)
+    public FormRegion(IFormRegion parent, bool topLevel = false) : base(parent)
     {
-        Parent = parent;
+        if (topLevel)
+        {
+            CreateNamingContext();
+        }
     }
 
-    public IFormRegion Parent { get; private set; }
+    public override void Create()
+    {
+        if (Parent is not null)
+        {
+            ValueAdded += Parent.InvokeValueAdded;
+            ValueRemoved += Parent.InvokeValueRemoved;
+        }
+    }
+
+    private NamingContext namingContext;
+    public NamingContext NamingContext
+    {
+        get => namingContext ?? Parent?.NamingContext;
+        private set
+        {
+            namingContext = value;
+        }
+    }
 
     public bool IsVisible { get; set; } = true;
 
-    public IEnumerable<IFormRegion> ChildRegions => Array.Empty<IFormRegion>();
+    public IEnumerable<IFormRegion> ChildRegions => Elements
+        .Where((it) => it is IFormRegion)
+        .Cast<IFormRegion>();
 
-    private List<FormElementBase> elements = new();
-    public IEnumerable<FormElementBase> Elements => elements;
+    private readonly List<FormElementBase> elements = new();
+    public IReadOnlyList<FormElementBase> Elements => elements;
 
     public void AddElement(FormElementBase element)
     {
         elements.Add(element);
+
+        foreach (var v in element.Values)
+        {
+            ValueAdded?.Invoke(v);
+        }
+    }
+
+    public bool RemoveElement(FormElementBase element)
+    {
+        if (elements.Remove(element))
+        {
+            foreach (var v in element.Values)
+            {
+                ValueRemoved?.Invoke(v);
+            }
+
+            return true;
+        }
+        return false;
+    }
+
+    public event Action<INamedValue> ValueAdded;
+
+    public event Action<INamedValue> ValueRemoved;
+
+    public void InvokeValueAdded(INamedValue value)
+    {
+        ValueAdded?.Invoke(value);
+    }
+
+    public void InvokeValueRemoved(INamedValue value)
+    {
+        ValueRemoved?.Invoke(value);
+    }
+
+    public NamingContext CreateNamingContext()
+    {
+        NamingContext = new();
+
+        ValueAdded += NamingContext.AddValue;
+        ValueRemoved += NamingContext.RemoveValue;
+
+        return NamingContext;
     }
 }
 

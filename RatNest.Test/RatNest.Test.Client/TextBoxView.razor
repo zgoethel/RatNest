@@ -14,6 +14,11 @@
         <span>Values are the same.</span>
     }
 
+    @foreach (var (name, value) in Parent.NamingContext.ValuesByName)
+    {
+        <span><strong>@(name):</strong> @value.Value</span>
+    }
+
 </div>
 
 @code {
@@ -29,12 +34,6 @@
         field = new(Parent);
         field.ValueChanged += async () => await InvokeAsync(StateHasChanged);
         field.StateChanged += async () => await InvokeAsync(StateHasChanged);
-
-        if (Parent is FormRegion area)
-        {
-            //TODO Add automatically in field constructor?
-            area.AddElement(field);
-        }
     }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)

@@ -10,15 +10,19 @@ public class TextBoxField : FormElementBase
 
     public TextBoxField(IFormRegion region) : base(region)
     {
+    }
+
+    public override void Create()
+    {
         AddNamedValue(Value);
     }
 
     public async Task Initialize()
     {
-        //TODO Look up value by name or reference ID
-        peerValue = Parent
-            .GetGlobalValues()
-            .Single((it) => it.Name != Value.Name);
+        (_, peerValue) = Parent
+            .NamingContext
+            .ValuesByName
+            .Single((it) => it.Key != Value.Name);
 
         Value.ValueChanged += RecalculateState;
         peerValue.ValueChanged += RecalculateState;

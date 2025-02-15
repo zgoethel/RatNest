@@ -5,7 +5,13 @@ public abstract class FormElementBase
     public FormElementBase(IFormRegion parent)
     {
         Parent = parent;
+
+        Create();
+
+        Parent?.AddElement(this);
     }
+
+    public abstract void Create();
 
     public IFormRegion Parent { get; private set; }
 
@@ -14,10 +20,15 @@ public abstract class FormElementBase
 
     public event Func<Task> ValueChanged;
 
+    private async Task InvokeValueChanged()
+    {
+        await ValueChanged.InvokeHandler();
+    }
+
     protected void AddNamedValue(INamedValue value)
     {
         values.Add(value);
-        value.ValueChanged += ValueChanged.InvokeHandler;
+        value.ValueChanged += InvokeValueChanged;
     }
 
     public FormElementState State { get; private set; } = FormElementState.None;
