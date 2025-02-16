@@ -59,6 +59,8 @@ public class FormRegion : FormElementBase, IFormRegion
     private NamingContext namingContext;
     public NamingContext NamingContext
     {
+        // This one has to be recursive since the parent node may or may not be
+        // of the same type and have a private `namingContext` variable.
         get => namingContext ?? Parent?.NamingContext;
         private set
         {

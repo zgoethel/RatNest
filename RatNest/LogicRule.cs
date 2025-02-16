@@ -1,4 +1,6 @@
-﻿namespace RatNest;
+﻿using System.Windows.Markup;
+
+namespace RatNest;
 
 public class LogicRule
 {
@@ -30,5 +32,57 @@ public class LogicRule
         SelectedValues = values;
 
         await InvokeSelectedValuesChanged();
+    }
+
+    public static EvaluatorFunc ForState(FormElementState state)
+    {
+        return (_, _, _) =>
+        {
+            return state;
+        };
+    }
+
+    public static EvaluatorFunc ForValidation(string message)
+    {
+        return (_, _, emitMessage) =>
+        {
+            emitMessage(message);
+
+            return FormElementState.Invalid;
+        };
+    }
+}
+
+public static class LogicRuleExtensions
+{
+    public static LogicRule.EvaluatorFunc WhenEquals(this LogicRule.EvaluatorFunc evaluator, int index, int secondIndex, bool not = false)
+    {
+        return (selectedValues, accumulated, emitMessage) =>
+        {
+            var value = selectedValues.GetSelected(index);
+            var secondValue = selectedValues.GetSelected(secondIndex);
+
+            if (not ^ object.Equals(value.Value, secondValue.Value))
+            {
+                return evaluator(selectedValues, accumulated, emitMessage);
+            }
+
+            return FormElementState.None;
+        };
+    }
+
+    public static LogicRule.EvaluatorFunc WhenEquals(this LogicRule.EvaluatorFunc evaluator, int index, object staticValue, bool not = false)
+    {
+        return (selectedValues, accumulated, emitMessage) =>
+        {
+            var value = selectedValues.GetSelected(index);
+
+            if (not ^ object.Equals(value.Value, staticValue))
+            {
+                return evaluator(selectedValues, accumulated, emitMessage);
+            }
+
+            return FormElementState.None;
+        };
     }
 }

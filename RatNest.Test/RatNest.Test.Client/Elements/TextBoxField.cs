@@ -42,50 +42,39 @@ public class TextBoxField : FormElementBase
 
         logicRules.PauseStateUpdates = true;
         {
-            var rule = logicRules.CreateLogicRule((values, accum, emitMessage) =>
-            {
-                return FormElementState.Required;
-            });
+            var eval = LogicRule.ForState(FormElementState.Required);
+            var rule = logicRules.CreateLogicRule(eval);
         }
         {
-            var rule = logicRules.CreateLogicRule((values, accum, emitMessage) =>
-            {
-                if (values.GetSelected(0)?.Value?.Equals("Invalid") == true)
-                {
-                    return FormElementState.Invalid;
-                }
+            var eval = LogicRule
+                .ForState(FormElementState.Invalid)
+                .WhenEquals(0, "Invalid");
+            var rule = logicRules.CreateLogicRule(eval);
 
-                if (values.GetSelected(0)?.Value?.Equals("Special Invalid") == true)
-                {
-                    emitMessage("Hello, world!");
-
-                    return FormElementState.Invalid;
-                }
-
-                return FormElementState.None;
-            });
             await rule.SetSelectedValues(Value);
         }
         {
-            var rule = logicRules.CreateLogicRule((values, accum, emitMessage) =>
-            {
-                if (values.GetSelected(0)?.Value?.Equals("Disabled") == true)
-                {
-                    return FormElementState.Disabled;
-                }
-                return FormElementState.None;
-            });
+            var eval = LogicRule
+                .ForValidation("Hello, world!")
+                .WhenEquals(0, "Special Invalid");
+            var rule = logicRules.CreateLogicRule(eval);
+
+            await rule.SetSelectedValues(Value);
+        }
+        {
+            var eval = LogicRule
+                .ForState(FormElementState.Disabled)
+                .WhenEquals(0, "Disabled");
+            var rule = logicRules.CreateLogicRule(eval);
+
             await rule.SetSelectedValues(peerValue);
         }
         {
-            var rule = logicRules.CreateLogicRule((values, accum, emitMessage) =>
-            {
-                if (values.GetSelected(0)?.Value?.Equals("Hidden") == true)
-                {
-                    return FormElementState.Hidden;
-                }
-                return FormElementState.None;
-            });
+            var eval = LogicRule
+                .ForState(FormElementState.Hidden)
+                .WhenEquals(0, "Hidden");
+            var rule = logicRules.CreateLogicRule(eval);
+
             await rule.SetSelectedValues(peerValue);
         }
         logicRules.PauseStateUpdates = false;
