@@ -4,6 +4,12 @@ public class LogicRuleSet
 {
     private List<INamedValue> prevUniqueValues = new();
 
+    public LogicRuleSet(FormElementState initialState = FormElementState.None)
+    {
+        State = initialState;
+    }
+
+    //TODO Validation message output
     public FormElementState State { get; private set; } = FormElementState.None;
 
     public event Func<Task> StateChanged;
@@ -13,15 +19,35 @@ public class LogicRuleSet
         await StateChanged.InvokeHandler();
     }
 
+    public bool PauseStateUpdates { get; set; } = false;
+
     private readonly List<LogicRule> rules = new();
     public IReadOnlyList<LogicRule> Rules => rules;
 
     public async Task EvaluateRules()
     {
+        if (PauseStateUpdates)
+        {
+            return;
+        }
+
         var state = FormElementState.None;
         foreach (var rule in Rules)
         {
             state |= rule.Evaluate(state);
+        }
+
+        if (state.HasFlag(FormElementState.Disabled)
+            || state.HasFlag(FormElementState.Hidden))
+        {
+            if (state.HasFlag(FormElementState.Required))
+            {
+                state -= FormElementState.Required;
+            }
+            if (state.HasFlag(FormElementState.Invalid))
+            {
+                state -= FormElementState.Invalid;
+            }
         }
 
         if (state != State)
@@ -36,11 +62,12 @@ public class LogicRuleSet
     {
         var currUniqueValues = Rules
             .SelectMany((it) => it.SelectedValues)
+            .Where((it) => it is not null)
             .DistinctBy((it) => it.RefId)
             .ToList();
 
-        var unsubscribe = prevUniqueValues.Where((it) => !currUniqueValues.Any((_it) => it.RefId == it.RefId));
-        var subscribe = currUniqueValues.Where((it) => !prevUniqueValues.Any((_it) => it.RefId == it.RefId));
+        var unsubscribe = prevUniqueValues.Where((it) => !currUniqueValues.Contains(it));
+        var subscribe = currUniqueValues.Where((it) => !prevUniqueValues.Contains(it));
 
         foreach (var value in unsubscribe)
         {

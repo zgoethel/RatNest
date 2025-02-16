@@ -16,7 +16,7 @@ public class LogicRule
         return Evaluator(SelectedValues, accumulated);
     }
 
-    public INamedValue[] SelectedValues { get; private set; }
+    public INamedValue[] SelectedValues { get; private set; } = Array.Empty<INamedValue>();
 
     public event Func<Task> SelectedValuesChanged;
 

@@ -29,4 +29,13 @@ public static class Extensions
             await func(value);
         }
     }
+
+    public static INamedValue GetSelected(this INamedValue[] values, int index)
+    {
+        if (index >= values.Length)
+        {
+            return null;
+        }
+        return values[index];
+    }
 }

@@ -39,12 +39,13 @@ public abstract class FormElementBase
     {
         State = state;
 
-        await StateChanged.InvokeHandler();
+        await InvokeStateChanged();
     }
 
     public bool IsDisabled => State.HasFlag(FormElementState.Disabled);
     public bool IsHidden => State.HasFlag(FormElementState.Hidden);
     public bool IsInvalid => State.HasFlag(FormElementState.Invalid);
+    public bool IsRequired => State.HasFlag(FormElementState.Required);
 
     public event Func<Task> StateChanged;
 

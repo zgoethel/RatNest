@@ -1,29 +1,45 @@
-﻿<div style="display: flex;
-            flex-direction: column;">
+﻿@if (!field.IsHidden)
+{
 
-    <label>@(field.Value.Name):</label>
+    <div style="display: flex;
+                flex-direction: column;">
 
-    <InputText Value="@field.Value.Value"
-        ValueExpression="@(() => field.Value.Value)"
-        ValueChanged="@field.Value.SetValue" />
+        <label>
+            @(field.Value.Name):
+            @if (field.IsRequired)
+            {
+                <i style="color: red;">*</i>
+            }
+        </label>
+        <InputText Value="@field.Value.Value"
+            ValueExpression="@(() => field.Value.Value)"
+            ValueChanged="@field.Value.SetValue"
+            disabled="@field.IsDisabled" />
+        @if (!string.IsNullOrEmpty(field.ValidationMessage))
+        {
+            <label style="color: red;">@field.ValidationMessage</label>
+        }
 
-    <InputText Value="@field.Value.Name"
-        ValueExpression="@(() => field.Value.Name)"
-        ValueChanged="@Rename" />
+        <i>Name:</i>
+        <InputText Value="@field.Value.Name"
+            ValueExpression="@(() => field.Value.Name)"
+            ValueChanged="@Rename" />
 
-    <i>(ID: @(field.Value.RefId))</i>
+        <i>ID: @(field.Value.RefId)</i>
 
-    @if (field.ValuesSame)
-    {
-        <span>Values are the same.</span>
-    }
+        @if (field.ValuesSame)
+        {
+            <span>Values are the same.</span>
+        }
 
-    @foreach (var (name, value) in Parent.NamingContext.ValuesByName)
-    {
-        <span><strong>@(name):</strong> @value.Value</span>
-    }
+        @foreach (var (name, value) in Parent.NamingContext.ValuesByName)
+        {
+            <span><strong>@(name):</strong> @value.Value</span>
+        }
 
-</div>
+    </div>
+
+}
 
 @code {
     [CascadingParameter]

@@ -8,6 +8,10 @@ public interface IFormRegion
 
     bool IsVisible { get; }
 
+    event Func<Task> IsVisibleChanged;
+
+    Task InvokeIsVisibleChanged();
+
     IEnumerable<IFormRegion> ChildRegions { get; }
 
     IReadOnlyList<FormElementBase> Elements { get; }
@@ -20,9 +24,9 @@ public interface IFormRegion
 
     event Action<INamedValue> ValueRemoved;
 
-    public void InvokeValueAdded(INamedValue value);
+    void InvokeValueAdded(INamedValue value);
 
-    public void InvokeValueRemoved(INamedValue value);
+    void InvokeValueRemoved(INamedValue value);
 }
 
 public class FormRegion : FormElementBase, IFormRegion
@@ -62,7 +66,21 @@ public class FormRegion : FormElementBase, IFormRegion
         }
     }
 
-    public bool IsVisible { get; set; } = true;
+    public bool IsVisible { get; private set; } = true;
+
+    public async Task SetIsVisible(bool isVisible)
+    {
+        IsVisible = isVisible;
+
+        await InvokeIsVisibleChanged();
+    }
+
+    public event Func<Task> IsVisibleChanged;
+
+    public async Task InvokeIsVisibleChanged()
+    {
+        await IsVisibleChanged.InvokeHandler();
+    }
 
     public IEnumerable<IFormRegion> ChildRegions => Elements
         .Where((it) => it is IFormRegion)
@@ -79,6 +97,11 @@ public class FormRegion : FormElementBase, IFormRegion
         {
             ValueAdded?.Invoke(v);
         }
+
+        if (element is IFormRegion region)
+        {
+            IsVisibleChanged += region.InvokeIsVisibleChanged;
+        }
     }
 
     public bool RemoveElement(FormElementBase element)
@@ -88,6 +111,11 @@ public class FormRegion : FormElementBase, IFormRegion
             foreach (var v in element.Values)
             {
                 ValueRemoved?.Invoke(v);
+            }
+
+            if (element is IFormRegion region)
+            {
+                IsVisibleChanged -= region.InvokeIsVisibleChanged;
             }
 
             return true;

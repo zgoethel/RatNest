@@ -2,15 +2,30 @@
 
 public class TextBoxField : FormElementBase
 {
+    private readonly LogicRuleSet logicRules;
+
     private INamedValue peerValue;
 
     public TextBoxField(IFormRegion region) : base(region)
     {
+        logicRules = new(State);
     }
 
     public NamedValue<string> Value { get; private set; }
 
     public bool ValuesSame { get; set; }
+
+    public bool IsBlank => string.IsNullOrEmpty(Value.Value);
+
+    private bool prevIsEffectivelyBlank = false;
+    public bool IsEffectivelyBlank => IsHidden || !Parent.IsEffectivelyVisible();
+
+    public string ValidationMessage => "" switch
+    {
+        _ when IsInvalid => "Invalid",
+        _ when IsRequired && IsBlank => "Required",
+        _ => ""
+    };
 
     public override void Create()
     {
@@ -25,20 +40,67 @@ public class TextBoxField : FormElementBase
             .ValuesByName
             .Single((it) => it.Key != Value.Name);
 
-        Value.ValueChanged += RecalculateState;
-        peerValue.ValueChanged += RecalculateState;
-
-        await RecalculateState();
-    }
-
-    private async Task RecalculateState()
-    {
-        var oldValuesSame = ValuesSame;
-        ValuesSame = peerValue.Value as string == Value.Value as string;
-
-        if (oldValuesSame != ValuesSame)
+        logicRules.PauseStateUpdates = true;
         {
-            await InvokeStateChanged();
+            var rule = logicRules.CreateLogicRule((values, accum) =>
+            {
+                return FormElementState.Required;
+            });
         }
+        {
+            var rule = logicRules.CreateLogicRule((values, accum) =>
+            {
+                if (values.GetSelected(0)?.Value?.Equals("Invalid") == true)
+                {
+                    return FormElementState.Invalid;
+                }
+                return FormElementState.None;
+            });
+            await rule.SetSelectedValues(Value);
+        }
+        {
+            var rule = logicRules.CreateLogicRule((values, accum) =>
+            {
+                if (values.GetSelected(0)?.Value?.Equals("Disabled") == true)
+                {
+                    return FormElementState.Disabled;
+                }
+                return FormElementState.None;
+            });
+            await rule.SetSelectedValues(peerValue);
+        }
+        {
+            var rule = logicRules.CreateLogicRule((values, accum) =>
+            {
+                if (values.GetSelected(0)?.Value?.Equals("Hidden") == true)
+                {
+                    return FormElementState.Hidden;
+                }
+                return FormElementState.None;
+            });
+            await rule.SetSelectedValues(peerValue);
+        }
+        logicRules.PauseStateUpdates = false;
+
+        logicRules.StateChanged += async () =>
+        {
+            await SetState(logicRules.State);
+
+            if (!prevIsEffectivelyBlank && IsEffectivelyBlank)
+            {
+                await Value.SetValue("");
+            }
+            prevIsEffectivelyBlank = IsEffectivelyBlank;
+        };
+        await logicRules.EvaluateRules();
+
+        Parent.IsVisibleChanged += async () =>
+        {
+            if (!prevIsEffectivelyBlank && IsEffectivelyBlank)
+            {
+                await Value.SetValue("");
+            }
+            prevIsEffectivelyBlank = IsEffectivelyBlank;
+        };
     }
 }
