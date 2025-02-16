@@ -6,21 +6,50 @@
 
 Welcome to your new app.
 
-<CascadingValue TValue="IFormRegion" Value="@region">
+<CascadingValue TValue="IFormRegion" Value="@topLevel">
 
     <div style="display: flex;
                 flex-direction: row;">
+    
+        <CascadingValue TValue="IFormRegion" Value="@leftArea">
+            <div>
 
-        <TextBoxView />
+                <InputCheckbox Value="@leftArea.IsVisible"
+                    ValueExpression="@(() => leftArea.IsVisible)"
+                    ValueChanged="@leftArea.SetIsVisible" />
 
-        <TextBoxView />
+                <TextBoxView />
+
+            </div>
+        </CascadingValue>
+
+        <CascadingValue TValue="IFormRegion" Value="@rightArea">
+            <div>
+
+                <InputCheckbox Value="@rightArea.IsVisible"
+                    ValueExpression="@(() => rightArea.IsVisible)"
+                    ValueChanged="@rightArea.SetIsVisible" />
+
+                <TextBoxView />
+
+            </div>
+        </CascadingValue>
 
     </div>
 
 </CascadingValue>
 
 @code {
-    private FormRegion region = new(null, topLevel: true);
+    private FormRegion topLevel, leftArea, rightArea;
+
+    protected override void OnInitialized()
+    {
+        base.OnInitialized();
+
+        topLevel = new(null, topLevel: true);
+        leftArea = new(topLevel);
+        rightArea = new(topLevel);
+    }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
@@ -28,7 +57,7 @@ Welcome to your new app.
 
         if (firstRender)
         {
-            await region.Initialize();
+            await topLevel.Initialize();
         }
     }
 }
