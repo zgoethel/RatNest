@@ -13,7 +13,7 @@ public class LogicRuleSet
 
     public event Func<Task> StateChanged;
 
-    private List<string> validationMessages = new();
+    private readonly List<string> validationMessages = new();
     public IReadOnlyList<string> ValidationMessages => validationMessages;
 
     private async Task InvokeStateChanged()
@@ -96,5 +96,16 @@ public class LogicRuleSet
         rules.Add(rule);
 
         return rule;
+    }
+
+    public async Task ClearLogicRules()
+    {
+        foreach (var rule in Rules)
+        {
+            rule.SelectedValuesChanged -= UpdateSubscriptions;
+        }
+        rules.Clear();
+
+        await UpdateSubscriptions();
     }
 }

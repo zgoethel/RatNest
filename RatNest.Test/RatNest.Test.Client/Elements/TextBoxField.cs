@@ -13,8 +13,6 @@ public class TextBoxField : FormElementBase
 
     public NamedValue<string> Value { get; private set; }
 
-    public bool ValuesSame { get; set; }
-
     public bool IsBlank => string.IsNullOrEmpty(Value.Value);
 
     private bool prevIsEffectivelyBlank = false;
@@ -41,9 +39,11 @@ public class TextBoxField : FormElementBase
             .Single((it) => it.Key != Value.Name);
 
         logicRules.PauseStateUpdates = true;
+        await logicRules.ClearLogicRules();
+
         {
             var eval = LogicRule.ForState(FormElementState.Required);
-            var rule = logicRules.CreateLogicRule(eval);
+            logicRules.CreateLogicRule(eval);
         }
         {
             var eval = LogicRule
@@ -77,6 +77,7 @@ public class TextBoxField : FormElementBase
 
             await rule.SetSelectedValues(peerValue);
         }
+
         logicRules.PauseStateUpdates = false;
 
         logicRules.StateChanged += async () =>

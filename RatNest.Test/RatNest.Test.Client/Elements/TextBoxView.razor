@@ -19,17 +19,13 @@
             <label style="color: red;">@field.ValidationMessage</label>
         }
 
+        <i style="margin-top: 12px;margin-bottom: 8px;">ID: @(field.Value.RefId)</i>
+
         <i>Name:</i>
         <InputText Value="@field.Value.Name"
             ValueExpression="@(() => field.Value.Name)"
-            ValueChanged="@Rename" />
-
-        <i>ID: @(field.Value.RefId)</i>
-
-        @if (field.ValuesSame)
-        {
-            <span>Values are the same.</span>
-        }
+            ValueChanged="@Rename"
+            style="margin-bottom: 12px;" />
 
         @foreach (var (name, value) in Parent.NamingContext.ValuesByName)
         {
