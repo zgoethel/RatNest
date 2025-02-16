@@ -2,7 +2,7 @@
 
 public class LogicRule
 {
-    public delegate FormElementState EvaluatorFunc(INamedValue[] selectedValues, FormElementState accumulated);
+    public delegate FormElementState EvaluatorFunc(INamedValue[] selectedValues, FormElementState accumulated, Action<string> emitMessage);
 
     public LogicRule(EvaluatorFunc evaluator)
     {
@@ -11,9 +11,9 @@ public class LogicRule
 
     public EvaluatorFunc Evaluator { get; private set; }
 
-    public FormElementState Evaluate(FormElementState accumulated)
+    public FormElementState Evaluate(FormElementState accumulated, Action<string> emitMessage)
     {
-        return Evaluator(SelectedValues, accumulated);
+        return Evaluator(SelectedValues, accumulated, emitMessage);
     }
 
     public INamedValue[] SelectedValues { get; private set; } = Array.Empty<INamedValue>();

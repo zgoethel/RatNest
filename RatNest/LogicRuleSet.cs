@@ -9,10 +9,12 @@ public class LogicRuleSet
         State = initialState;
     }
 
-    //TODO Validation message output
     public FormElementState State { get; private set; } = FormElementState.None;
 
     public event Func<Task> StateChanged;
+
+    private List<string> validationMessages = new();
+    public IReadOnlyList<string> ValidationMessages => validationMessages;
 
     private async Task InvokeStateChanged()
     {
@@ -32,9 +34,11 @@ public class LogicRuleSet
         }
 
         var state = FormElementState.None;
+        validationMessages.Clear();
+
         foreach (var rule in Rules)
         {
-            state |= rule.Evaluate(state);
+            state |= rule.Evaluate(state, validationMessages.Add);
         }
 
         if (state.HasFlag(FormElementState.Disabled)

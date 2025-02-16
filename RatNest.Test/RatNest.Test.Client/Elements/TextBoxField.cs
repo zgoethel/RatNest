@@ -22,7 +22,7 @@ public class TextBoxField : FormElementBase
 
     public string ValidationMessage => "" switch
     {
-        _ when IsInvalid => "Invalid",
+        _ when IsInvalid => logicRules.ValidationMessages.FirstOrDefault("Invalid"),
         _ when IsRequired && IsBlank => "Required",
         _ => ""
     };
@@ -42,24 +42,32 @@ public class TextBoxField : FormElementBase
 
         logicRules.PauseStateUpdates = true;
         {
-            var rule = logicRules.CreateLogicRule((values, accum) =>
+            var rule = logicRules.CreateLogicRule((values, accum, emitMessage) =>
             {
                 return FormElementState.Required;
             });
         }
         {
-            var rule = logicRules.CreateLogicRule((values, accum) =>
+            var rule = logicRules.CreateLogicRule((values, accum, emitMessage) =>
             {
                 if (values.GetSelected(0)?.Value?.Equals("Invalid") == true)
                 {
                     return FormElementState.Invalid;
                 }
+
+                if (values.GetSelected(0)?.Value?.Equals("Special Invalid") == true)
+                {
+                    emitMessage("Hello, world!");
+
+                    return FormElementState.Invalid;
+                }
+
                 return FormElementState.None;
             });
             await rule.SetSelectedValues(Value);
         }
         {
-            var rule = logicRules.CreateLogicRule((values, accum) =>
+            var rule = logicRules.CreateLogicRule((values, accum, emitMessage) =>
             {
                 if (values.GetSelected(0)?.Value?.Equals("Disabled") == true)
                 {
@@ -70,7 +78,7 @@ public class TextBoxField : FormElementBase
             await rule.SetSelectedValues(peerValue);
         }
         {
-            var rule = logicRules.CreateLogicRule((values, accum) =>
+            var rule = logicRules.CreateLogicRule((values, accum, emitMessage) =>
             {
                 if (values.GetSelected(0)?.Value?.Equals("Hidden") == true)
                 {
