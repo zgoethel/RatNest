@@ -2,7 +2,7 @@
 
 public class LogicRuleSet
 {
-    private List<INamedValue> prevUniqueValues = new();
+    private HashSet<INamedValue> prevUniqueValues = new();
 
     public LogicRuleSet(FormElementState initialState = FormElementState.None)
     {
@@ -13,18 +13,28 @@ public class LogicRuleSet
 
     public event Func<Task> StateChanged;
 
-    private readonly List<string> validationMessages = new();
-    public IReadOnlyList<string> ValidationMessages => validationMessages;
-
     private async Task InvokeStateChanged()
     {
         await StateChanged.InvokeHandler();
     }
 
+    private readonly List<string> validationMessages = new();
+    public IReadOnlyList<string> ValidationMessages => validationMessages;
+
     public bool PauseStateUpdates { get; set; } = false;
 
     private readonly List<LogicRule> rules = new();
     public IReadOnlyList<LogicRule> Rules => rules;
+
+    public LogicRule CreateLogicRule(LogicRule.EvaluatorFunc evaluator)
+    {
+        var rule = new LogicRule(evaluator);
+        rule.SelectedValuesChanged += UpdateSubscriptions;
+
+        rules.Add(rule);
+
+        return rule;
+    }
 
     public async Task EvaluateRules()
     {
@@ -67,8 +77,7 @@ public class LogicRuleSet
         var currUniqueValues = Rules
             .SelectMany((it) => it.SelectedValues)
             .Where((it) => it is not null)
-            .DistinctBy((it) => it.RefId)
-            .ToList();
+            .ToHashSet();
 
         var unsubscribe = prevUniqueValues.Where((it) => !currUniqueValues.Contains(it));
         var subscribe = currUniqueValues.Where((it) => !prevUniqueValues.Contains(it));
@@ -88,22 +97,13 @@ public class LogicRuleSet
         await EvaluateRules();
     }
 
-    public LogicRule CreateLogicRule(LogicRule.EvaluatorFunc evaluator)
-    {
-        var rule = new LogicRule(evaluator);
-        rule.SelectedValuesChanged += UpdateSubscriptions;
-
-        rules.Add(rule);
-
-        return rule;
-    }
-
     public async Task ClearLogicRules()
     {
         foreach (var rule in Rules)
         {
             rule.SelectedValuesChanged -= UpdateSubscriptions;
         }
+
         rules.Clear();
 
         await UpdateSubscriptions();

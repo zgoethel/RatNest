@@ -37,15 +37,14 @@ public abstract class FormElementBase
 
     public async Task SetState(FormElementState state)
     {
+        var oldState = State;
         State = state;
 
-        await InvokeStateChanged();
+        if (oldState != State)
+        {
+            await InvokeStateChanged();
+        }
     }
-
-    public bool IsDisabled => State.HasFlag(FormElementState.Disabled);
-    public bool IsHidden => State.HasFlag(FormElementState.Hidden);
-    public bool IsInvalid => State.HasFlag(FormElementState.Invalid);
-    public bool IsRequired => State.HasFlag(FormElementState.Required);
 
     public event Func<Task> StateChanged;
 
@@ -53,4 +52,9 @@ public abstract class FormElementBase
     {
         await StateChanged.InvokeHandler();
     }
+
+    public bool IsDisabled => State.HasFlag(FormElementState.Disabled);
+    public bool IsHidden => State.HasFlag(FormElementState.Hidden);
+    public bool IsInvalid => State.HasFlag(FormElementState.Invalid);
+    public bool IsRequired => State.HasFlag(FormElementState.Required);
 }

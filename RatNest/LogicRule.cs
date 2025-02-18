@@ -20,18 +20,18 @@ public class LogicRule
 
     public INamedValue[] SelectedValues { get; private set; } = Array.Empty<INamedValue>();
 
-    public event Func<Task> SelectedValuesChanged;
-
-    public async Task InvokeSelectedValuesChanged()
-    {
-        await SelectedValuesChanged.InvokeHandler();
-    }
-
     public async Task SetSelectedValues(params INamedValue[] values)
     {
         SelectedValues = values;
 
         await InvokeSelectedValuesChanged();
+    }
+
+    public event Func<Task> SelectedValuesChanged;
+
+    public async Task InvokeSelectedValuesChanged()
+    {
+        await SelectedValuesChanged.InvokeHandler();
     }
 
     public static EvaluatorFunc ForState(FormElementState state)
@@ -59,6 +59,12 @@ public static class LogicRuleExtensions
     {
         return (selectedValues, accumulated, emitMessage) =>
         {
+            if (selectedValues.GetSelected(index) is null
+                || selectedValues.GetSelected(secondIndex) is null)
+            {
+                return FormElementState.None;
+            }
+
             var value = selectedValues.GetSelected(index);
             var secondValue = selectedValues.GetSelected(secondIndex);
 
@@ -75,6 +81,11 @@ public static class LogicRuleExtensions
     {
         return (selectedValues, accumulated, emitMessage) =>
         {
+            if (selectedValues.GetSelected(index) is null)
+            {
+                return FormElementState.None;
+            }
+
             var value = selectedValues.GetSelected(index);
 
             if (not ^ object.Equals(value.Value, staticValue))
