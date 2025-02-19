@@ -11,7 +11,8 @@
             Variant="@Variant.Outlined"
             Margin="@Margin.Dense"
             Error="@(!string.IsNullOrEmpty(Field.ValidationMessage))"
-            Disabled="@Field.IsDisabled" />
+            Disabled="@Field.IsDisabled"
+            OnBlur="@(() => { /*Redraw*/ })" />
 
         @if (!string.IsNullOrEmpty(Field.ValidationMessage))
         {

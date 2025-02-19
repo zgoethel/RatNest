@@ -39,8 +39,8 @@ Welcome to your new app.
         leftArea = new(topLevel);
         rightArea = new(topLevel);
 
-        leftField = new(leftArea);
-        rightField = new(rightArea);
+        leftField = new(leftArea, initialValue: "Hello, world!");
+        rightField = new(rightArea, initialValue: "Foo bar");
     }
 
     protected override async Task OnInitializedAsync()

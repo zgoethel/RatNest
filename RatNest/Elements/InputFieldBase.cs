@@ -32,7 +32,7 @@ public abstract class InputFieldBase<T> : FormElementBase
 
     public override void Create()
     {
-        Value = new(Parent.NamingContext?.GetUniqueName(DefaultNamePrefix) ?? DefaultNamePrefix);
+        Value = new(Parent.NamingContext?.GetUniqueName(DefaultNamePrefix) ?? DefaultNamePrefix, value: BlankValue);
         AddNamedValue(Value);
     }
 
@@ -65,6 +65,7 @@ public abstract class InputFieldBase<T> : FormElementBase
         Parent.IsVisibleChanged += CheckIfBecameHidden;
     }
 
+    //TODO Consider value used when a field is hidden
     private async Task CheckIfBecameHidden()
     {
         if (!prevIsEffectivelyBlank && IsEffectivelyBlank)

@@ -2,16 +2,20 @@
 
 public class TextBoxField : InputFieldBase<string>
 {
+    private readonly string initialValue;
 
-    public TextBoxField(IFormRegion region) : base(region)
+
+    public TextBoxField(IFormRegion region, string initialValue = "") : base(region)
     {
+        this.initialValue = initialValue;
     }
 
     public override string DefaultNamePrefix => "Text Box";
 
     public override bool IsBlank => string.IsNullOrEmpty(Value.Value);
 
-    public override string BlankValue => "";
+    //TODO Reconsider
+    public override string BlankValue => initialValue;
 
     public override void Create()
     {
@@ -21,5 +25,8 @@ public class TextBoxField : InputFieldBase<string>
     public override async Task Initialize()
     {
         await base.Initialize();
+
+        await Value.SetValue(initialValue);
+        await InvokeStateChanged();
     }
 }
