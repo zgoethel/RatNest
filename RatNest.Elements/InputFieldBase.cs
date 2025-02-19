@@ -1,4 +1,4 @@
-﻿namespace RatNest.Test.Client.Elements;
+﻿namespace RatNest.Elements;
 
 public abstract class InputFieldBase<T> : FormElementBase
 {

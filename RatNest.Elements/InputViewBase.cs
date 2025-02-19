@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Components;
 
-namespace RatNest.Test.Client.Elements;
+namespace RatNest.Elements;
 
 public abstract class InputViewBase<TValue, TField> : ComponentBase
     where TField : InputFieldBase<TValue>

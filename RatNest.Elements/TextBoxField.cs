@@ -1,4 +1,4 @@
-﻿namespace RatNest.Test.Client.Elements;
+﻿namespace RatNest.Elements;
 
 public class TextBoxField : InputFieldBase<string>
 {
@@ -20,6 +20,6 @@ public class TextBoxField : InputFieldBase<string>
 
     public override async Task Initialize()
     {
-        base.Initialize();
+        await base.Initialize();
     }
 }
