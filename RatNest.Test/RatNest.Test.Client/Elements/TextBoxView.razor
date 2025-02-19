@@ -1,4 +1,6 @@
-﻿@if (!Field.IsEffectivelyBlank)
+﻿@inherits InputViewBase<string, TextBoxField>
+
+@if (!Field.IsEffectivelyBlank)
 {
     <div class="d-flex flex-column">
 
@@ -17,35 +19,4 @@
         }
 
     </div>
-}
-
-@code {
-    private TextBoxField prevField;
-    [Parameter]
-    public TextBoxField Field { get; set; }
-
-    private string EffectiveLabel => $"{Field.Value.Name}{(Field.IsRequired ? "*" : "")}";
-
-    private async Task Redraw()
-    {
-        await InvokeAsync(StateHasChanged);
-    }
-
-    protected override void OnParametersSet()
-    {
-        base.OnParametersSet();
-
-        if (prevField != Field)
-        {
-            if (prevField is not null)
-            {
-                Field.StateChanged -= Redraw;
-            }
-            if (Field is not null)
-            {
-                Field.StateChanged += Redraw;
-            }
-        }
-        prevField = Field;
-    }
 }
