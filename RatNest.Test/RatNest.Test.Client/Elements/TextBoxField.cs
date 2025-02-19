@@ -27,7 +27,7 @@ public class TextBoxField : FormElementBase
 
     public override void Create()
     {
-        Value = new(Parent.NamingContext?.GetUniqueName("field") ?? "field");
+        Value = new(Parent.NamingContext?.GetUniqueName("Text Box") ?? "Text Box");
         AddNamedValue(Value);
     }
 

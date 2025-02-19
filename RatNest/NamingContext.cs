@@ -37,7 +37,7 @@ public class NamingContext
         var newName = originalName;
         for (var i = 2;
             ValuesByName.TryGetValue(newName, out var v) && v.RefId != excludeRefId;
-            newName = $"{originalName}{i++}");
+            newName = $"{originalName} {i++}");
 
         return newName;
     }

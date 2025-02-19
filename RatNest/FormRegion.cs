@@ -72,9 +72,13 @@ public class FormRegion : FormElementBase, IFormRegion
 
     public async Task SetIsVisible(bool isVisible)
     {
+        var oldIsVisible = IsVisible;
         IsVisible = isVisible;
 
-        await InvokeIsVisibleChanged();
+        if (oldIsVisible != IsVisible)
+        {
+            await InvokeIsVisibleChanged();
+        }
     }
 
     public event Func<Task> IsVisibleChanged;

@@ -1,60 +1,51 @@
-﻿@if (!field.IsEffectivelyBlank)
+﻿@if (!Field.IsEffectivelyBlank)
 {
-    <div style="display: flex;
-                flex-direction: column;">
+    <div class="d-flex flex-column">
 
-        <label>
-            @(field.Value.Name):
-            @if (field.IsRequired)
-            {
-                <i style="color: red;">*</i>
-            }
-        </label>
-        <InputText Value="@field.Value.Value"
-            ValueExpression="@(() => field.Value.Value)"
-            ValueChanged="@field.Value.SetValue"
-            disabled="@field.IsDisabled" />
-        @if (!string.IsNullOrEmpty(field.ValidationMessage))
+        <MudTextField Label="@Field.Value.Name"
+            T="string"
+            Value="@Field.Value.Value"
+            ValueChanged="@Field.Value.SetValue"
+            Variant="@Variant.Outlined"
+            Margin="@Margin.Dense"
+            Required="@Field.IsRequired"
+            RequiredError=""
+            Error="@(!string.IsNullOrEmpty(Field.ValidationMessage))"
+            Disabled="@Field.IsDisabled" />
+
+        @if (!string.IsNullOrEmpty(Field.ValidationMessage))
         {
-            <label style="color: red;">@field.ValidationMessage</label>
-        }
-
-        <i style="margin-top: 12px;margin-bottom: 8px;">ID: @(field.Value.RefId)</i>
-
-        <i>Name:</i>
-        <InputText Value="@field.Value.Name"
-            ValueExpression="@(() => field.Value.Name)"
-            ValueChanged="@Rename"
-            style="margin-bottom: 12px;" />
-
-        @foreach (var (name, value) in Parent.NamingContext.ValuesByName)
-        {
-            <span><strong>@(name):</strong> @value.Value</span>
+            <MudText Typo="@Typo.body2" Color="@Color.Error">@Field.ValidationMessage</MudText>
         }
 
     </div>
 }
 
 @code {
-    [CascadingParameter]
-    public IFormRegion Parent { get; set; }
+    private TextBoxField prevField;
+    [Parameter]
+    public TextBoxField Field { get; set; }
 
-    private TextBoxField field;
-
-    protected override void OnInitialized()
+    private async Task Redraw()
     {
-        base.OnInitialized();
-
-        field = new(Parent);
-        field.StateChanged += async () => await InvokeAsync(StateHasChanged);
+        await InvokeAsync(StateHasChanged);
     }
 
-    private void Rename(string newName)
+    protected override void OnParametersSet()
     {
-        newName = Parent.NamingContext.GetUniqueName(
-            newName,
-            excludeRefId: field.Value.RefId);
+        base.OnParametersSet();
 
-        field.Value.Rename(newName);
+        if (prevField != Field)
+        {
+            if (prevField is not null)
+            {
+                Field.StateChanged -= Redraw;
+            }
+            if (Field is not null)
+            {
+                Field.StateChanged += Redraw;
+            }
+        }
+        prevField = Field;
     }
 }

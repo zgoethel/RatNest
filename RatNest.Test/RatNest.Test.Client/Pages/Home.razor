@@ -6,43 +6,30 @@
 
 Welcome to your new app.
 
-<CascadingValue TValue="IFormRegion" Value="@topLevel">
+<div class="d-flex flex-row gap-2 mt-3">
+    <div>
 
-    <div style="display: flex;
-                flex-direction: row;
-                gap: 8px;
-                margin-top: 12px;">
-    
-        <CascadingValue TValue="IFormRegion" Value="@leftArea">
-            <div>
+        <InputCheckbox Value="@leftArea.IsVisible"
+            ValueExpression="@(() => leftArea.IsVisible)"
+            ValueChanged="@leftArea.SetIsVisible" />
 
-                <InputCheckbox Value="@leftArea.IsVisible"
-                    ValueExpression="@(() => leftArea.IsVisible)"
-                    ValueChanged="@leftArea.SetIsVisible" />
-
-                <TextBoxView />
-
-            </div>
-        </CascadingValue>
-
-        <CascadingValue TValue="IFormRegion" Value="@rightArea">
-            <div>
-
-                <InputCheckbox Value="@rightArea.IsVisible"
-                    ValueExpression="@(() => rightArea.IsVisible)"
-                    ValueChanged="@rightArea.SetIsVisible" />
-
-                <TextBoxView />
-
-            </div>
-        </CascadingValue>
+        <TextBoxView Field="@leftField" />
 
     </div>
+    <div>
 
-</CascadingValue>
+        <InputCheckbox Value="@rightArea.IsVisible"
+            ValueExpression="@(() => rightArea.IsVisible)"
+            ValueChanged="@rightArea.SetIsVisible" />
+
+        <TextBoxView Field="@rightField" />
+
+    </div>
+</div>
 
 @code {
     private FormRegion topLevel, leftArea, rightArea;
+    private TextBoxField leftField, rightField;
 
     protected override void OnInitialized()
     {
@@ -51,6 +38,9 @@ Welcome to your new app.
         topLevel = new(null, topLevel: true);
         leftArea = new(topLevel);
         rightArea = new(topLevel);
+
+        leftField = new(leftArea);
+        rightField = new(rightArea);
     }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)

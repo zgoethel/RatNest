@@ -15,6 +15,8 @@ public interface INamedValue
     Task SetValue(object value);
 
     event Func<Task> ValueChanged;
+
+    Type ValueType { get; }
 }
 
 public class NamedValue<T> : INamedValue
@@ -59,4 +61,6 @@ public class NamedValue<T> : INamedValue
     }
 
     public event Func<Task> ValueChanged;
+
+    public Type ValueType => typeof(T);
 }
