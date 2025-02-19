@@ -1,5 +1,5 @@
 * {
-    font-family: "Inter", system-ui, sans-serif;
+    font-family: "Inter", system-ui, sans-serif !important;
 }
 
 h1:focus {

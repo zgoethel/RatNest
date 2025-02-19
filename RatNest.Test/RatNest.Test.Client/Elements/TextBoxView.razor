@@ -2,14 +2,12 @@
 {
     <div class="d-flex flex-column">
 
-        <MudTextField Label="@Field.Value.Name"
+        <MudTextField Label="@EffectiveLabel"
             T="string"
             Value="@Field.Value.Value"
             ValueChanged="@Field.Value.SetValue"
             Variant="@Variant.Outlined"
             Margin="@Margin.Dense"
-            Required="@Field.IsRequired"
-            RequiredError=""
             Error="@(!string.IsNullOrEmpty(Field.ValidationMessage))"
             Disabled="@Field.IsDisabled" />
 
@@ -25,6 +23,8 @@
     private TextBoxField prevField;
     [Parameter]
     public TextBoxField Field { get; set; }
+
+    private string EffectiveLabel => $"{Field.Value.Name}{(Field.IsRequired ? "*" : "")}";
 
     private async Task Redraw()
     {

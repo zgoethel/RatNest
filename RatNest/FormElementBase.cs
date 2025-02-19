@@ -35,12 +35,12 @@ public abstract class FormElementBase
 
     public FormElementState State { get; private set; } = FormElementState.None;
 
-    public async Task SetState(FormElementState state)
+    public async Task SetState(FormElementState state, bool forceRedraw = false)
     {
         var oldState = State;
         State = state;
 
-        if (oldState != State)
+        if (oldState != State || forceRedraw)
         {
             await InvokeStateChanged();
         }

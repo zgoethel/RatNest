@@ -4,8 +4,6 @@ public class TextBoxField : FormElementBase
 {
     private readonly LogicRuleSet logicRules;
 
-    private INamedValue peerValue;
-
     public TextBoxField(IFormRegion region) : base(region)
     {
         logicRules = new(State);
@@ -18,6 +16,7 @@ public class TextBoxField : FormElementBase
     private bool prevIsEffectivelyBlank = false;
     public bool IsEffectivelyBlank => IsHidden || !Parent.IsEffectivelyVisible();
 
+    private string prevValidationMessage = "";
     public string ValidationMessage => "" switch
     {
         _ when IsInvalid => logicRules.ValidationMessages.FirstOrDefault("Invalid"),
@@ -31,74 +30,41 @@ public class TextBoxField : FormElementBase
         AddNamedValue(Value);
     }
 
-    public override async Task Initialize()
+    public async Task ConfigureLogic(Func<LogicRuleSet, Task> config, bool clearRules = true)
     {
-        (_, peerValue) = Parent
-            .NamingContext
-            .ValuesByName
-            .Single((it) => it.Key != Value.Name);
-
         logicRules.PauseStateUpdates = true;
-        await logicRules.ClearLogicRules();
-
+        if (clearRules)
         {
-            var eval = LogicRule.ForState(FormElementState.Required);
-            logicRules.CreateLogicRule(eval);
+            await logicRules.ClearLogicRules();
         }
-        {
-            var eval = LogicRule
-                .ForState(FormElementState.Invalid)
-                .WhenEquals(0, "Invalid");
-            var rule = logicRules.CreateLogicRule(eval);
 
-            await rule.SetSelectedValues(Value);
-        }
-        {
-            var eval = LogicRule
-                .ForValidation("Hello, world!")
-                .WhenEquals(0, "Special Invalid");
-            var rule = logicRules.CreateLogicRule(eval);
-
-            await rule.SetSelectedValues(Value);
-        }
-        {
-            var eval = LogicRule
-                .ForState(FormElementState.Disabled)
-                .WhenEquals(0, "Disabled");
-            var rule = logicRules.CreateLogicRule(eval);
-
-            await rule.SetSelectedValues(peerValue);
-        }
-        {
-            var eval = LogicRule
-                .ForState(FormElementState.Hidden)
-                .WhenEquals(0, "Hidden");
-            var rule = logicRules.CreateLogicRule(eval);
-
-            await rule.SetSelectedValues(peerValue);
-        }
+        await config(logicRules);
 
         logicRules.PauseStateUpdates = false;
+    }
 
+    public override async Task Initialize()
+    {
         logicRules.StateChanged += async () =>
         {
-            await SetState(logicRules.State);
+            var forceRedraw = prevValidationMessage != ValidationMessage;
+            prevValidationMessage = ValidationMessage;
 
-            if (!prevIsEffectivelyBlank && IsEffectivelyBlank)
-            {
-                await Value.SetValue("");
-            }
-            prevIsEffectivelyBlank = IsEffectivelyBlank;
+            await SetState(logicRules.State, forceRedraw: forceRedraw);
+
+            await CheckIfBecameHidden();
         };
         await logicRules.EvaluateRules();
 
-        Parent.IsVisibleChanged += async () =>
+        Parent.IsVisibleChanged += CheckIfBecameHidden;
+    }
+
+    private async Task CheckIfBecameHidden()
+    {
+        if (!prevIsEffectivelyBlank && IsEffectivelyBlank)
         {
-            if (!prevIsEffectivelyBlank && IsEffectivelyBlank)
-            {
-                await Value.SetValue("");
-            }
-            prevIsEffectivelyBlank = IsEffectivelyBlank;
-        };
+            await Value.SetValue("");
+        }
+        prevIsEffectivelyBlank = IsEffectivelyBlank;
     }
 }

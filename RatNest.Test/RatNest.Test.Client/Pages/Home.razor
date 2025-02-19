@@ -43,6 +43,62 @@ Welcome to your new app.
         rightField = new(rightArea);
     }
 
+    protected override async Task OnInitializedAsync()
+    {
+        await base.OnInitializedAsync();
+        
+        async Task configureLogic(LogicRuleSet logicRules, TextBoxField field, TextBoxField other)
+        {
+            {
+                var eval = LogicRule.ForState(FormElementState.Required);
+                logicRules.CreateLogicRule(eval);
+            }
+            {
+                var eval = LogicRule
+                    .ForState(FormElementState.Invalid)
+                    .WhenEquals(0, "Invalid");
+                var rule = logicRules.CreateLogicRule(eval);
+
+                await rule.SetSelectedValues(field.Value);
+            }
+            {
+                var eval = LogicRule
+                    .ForValidation("Fields can't equal each other")
+                    .WhenEquals(0, 1);
+                var rule = logicRules.CreateLogicRule(eval);
+
+                await rule.SetSelectedValues(field.Value, other.Value);
+            }
+            {
+                var eval = LogicRule
+                    .ForValidation("Hello, world!")
+                    .WhenEquals(0, "Special Invalid");
+                var rule = logicRules.CreateLogicRule(eval);
+
+                await rule.SetSelectedValues(field.Value);
+            }
+            {
+                var eval = LogicRule
+                    .ForState(FormElementState.Disabled)
+                    .WhenEquals(0, "Disabled");
+                var rule = logicRules.CreateLogicRule(eval);
+
+                await rule.SetSelectedValues(other.Value);
+            }
+            {
+                var eval = LogicRule
+                    .ForState(FormElementState.Hidden)
+                    .WhenEquals(0, "Hidden");
+                var rule = logicRules.CreateLogicRule(eval);
+
+                await rule.SetSelectedValues(other.Value);
+            }
+        }
+
+        await leftField.ConfigureLogic(async (it) => await configureLogic(it, leftField, rightField));
+        await rightField.ConfigureLogic(async (it) => await configureLogic(it, rightField, leftField));
+    }
+
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         await base.OnAfterRenderAsync(firstRender);

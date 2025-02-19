@@ -43,6 +43,8 @@ public class LogicRuleSet
             return;
         }
 
+        var oldValidationMessages = validationMessages.ToArray();
+
         var state = FormElementState.None;
         validationMessages.Clear();
 
@@ -64,7 +66,14 @@ public class LogicRuleSet
             }
         }
 
-        if (state != State)
+        var stateChanged = State != state;
+        
+        var validationChanged = oldValidationMessages.Length != ValidationMessages.Count
+            || oldValidationMessages
+                .Zip(ValidationMessages)
+                .Any((it) => it.First != it.Second);
+
+        if (stateChanged || validationChanged)
         {
             State = state;
 
