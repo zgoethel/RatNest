@@ -1,6 +1,4 @@
-﻿using System.Windows.Markup;
-
-namespace RatNest;
+﻿namespace RatNest.Logic;
 
 public class LogicRule
 {

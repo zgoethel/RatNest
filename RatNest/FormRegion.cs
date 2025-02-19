@@ -110,6 +110,7 @@ public class FormRegion : FormElementBase, IFormRegion
         }
     }
 
+    //TODO Consider removal of sub-areas
     public bool RemoveElement(FormElementBase element)
     {
         if (elements.Remove(element))

@@ -1,4 +1,4 @@
-﻿namespace RatNest;
+﻿namespace RatNest.Logic;
 
 public class LogicRuleSet
 {
@@ -67,7 +67,7 @@ public class LogicRuleSet
         }
 
         var stateChanged = State != state;
-        
+
         var validationChanged = oldValidationMessages.Length != ValidationMessages.Count
             || oldValidationMessages
                 .Zip(ValidationMessages)

@@ -1,4 +1,6 @@
-﻿namespace RatNest.Elements;
+﻿using RatNest.Logic;
+
+namespace RatNest.Elements;
 
 public abstract class InputFieldBase<T> : FormElementBase
 {
