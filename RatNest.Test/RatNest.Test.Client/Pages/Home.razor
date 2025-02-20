@@ -1,4 +1,5 @@
 ﻿@page "/"
+@inject HomeVm vm
 
 <PageTitle>Home</PageTitle>
 
@@ -6,106 +7,38 @@
 
 Welcome to your new app.
 
-<div class="d-flex flex-row gap-2 mt-3">
-    <div>
+@if (!loading)
+{
+    <div class="d-flex flex-row gap-2 mt-3">
+        <div>
 
-        <InputCheckbox Value="@leftArea.IsVisible"
-            ValueExpression="@(() => leftArea.IsVisible)"
-            ValueChanged="@leftArea.SetIsVisible" />
+            <InputCheckbox Value="@vm.LeftArea.IsVisible"
+                ValueExpression="@(() => vm.LeftArea.IsVisible)"
+                ValueChanged="@vm.LeftArea.SetIsVisible" />
 
-        <TextBoxView Field="@leftField" />
+            <TextBoxView Field="@vm.LeftField" />
 
+        </div>
+        <div>
+
+            <InputCheckbox Value="@vm.RightArea.IsVisible"
+                ValueExpression="@(() => vm.RightArea.IsVisible)"
+                ValueChanged="@vm.RightArea.SetIsVisible" />
+
+            <TextBoxView Field="@vm.RightField" />
+
+        </div>
     </div>
-    <div>
-
-        <InputCheckbox Value="@rightArea.IsVisible"
-            ValueExpression="@(() => rightArea.IsVisible)"
-            ValueChanged="@rightArea.SetIsVisible" />
-
-        <TextBoxView Field="@rightField" />
-
-    </div>
-</div>
+}
 
 @code {
-    private FormRegion topLevel, leftArea, rightArea;
-    private TextBoxField leftField, rightField;
-
-    protected override void OnInitialized()
-    {
-        base.OnInitialized();
-
-        topLevel = new(null, topLevel: true);
-        leftArea = new(topLevel);
-        rightArea = new(topLevel);
-
-        leftField = new(leftArea, initialValue: "Hello, world!");
-        rightField = new(rightArea, initialValue: "Foo bar");
-    }
+    private bool loading = true;
 
     protected override async Task OnInitializedAsync()
     {
         await base.OnInitializedAsync();
         
-        async Task configureLogic(LogicRuleSet logicRules, TextBoxField field, TextBoxField other)
-        {
-            {
-                var eval = LogicRule.ForState(FormElementState.Required);
-                logicRules.CreateLogicRule(eval);
-            }
-            {
-                var eval = LogicRule
-                    .ForState(FormElementState.Invalid)
-                    .WhenEquals(0, "Invalid");
-                var rule = logicRules.CreateLogicRule(eval);
-
-                await rule.SetSelectedValues(field.Value);
-            }
-            {
-                var eval = LogicRule
-                    .ForValidation("Fields can't equal each other")
-                    .WhenEquals(0, 1);
-                var rule = logicRules.CreateLogicRule(eval);
-
-                await rule.SetSelectedValues(field.Value, other.Value);
-            }
-            {
-                var eval = LogicRule
-                    .ForValidation("Hello, world!")
-                    .WhenEquals(0, "Special Invalid");
-                var rule = logicRules.CreateLogicRule(eval);
-
-                await rule.SetSelectedValues(field.Value);
-            }
-            {
-                var eval = LogicRule
-                    .ForState(FormElementState.Disabled)
-                    .WhenEquals(0, "Disabled");
-                var rule = logicRules.CreateLogicRule(eval);
-
-                await rule.SetSelectedValues(other.Value);
-            }
-            {
-                var eval = LogicRule
-                    .ForState(FormElementState.Hidden)
-                    .WhenEquals(0, "Hidden");
-                var rule = logicRules.CreateLogicRule(eval);
-
-                await rule.SetSelectedValues(other.Value);
-            }
-        }
-
-        await leftField.ConfigureLogic(async (it) => await configureLogic(it, leftField, rightField));
-        await rightField.ConfigureLogic(async (it) => await configureLogic(it, rightField, leftField));
-    }
-
-    protected override async Task OnAfterRenderAsync(bool firstRender)
-    {
-        await base.OnAfterRenderAsync(firstRender);
-
-        if (firstRender)
-        {
-            await topLevel.Initialize();
-        }
+        await vm.Initialize();
+        loading = false;
     }
 }
