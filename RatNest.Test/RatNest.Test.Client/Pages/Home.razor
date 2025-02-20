@@ -9,30 +9,50 @@ Welcome to your new app.
 
 @if (!loading)
 {
-    <div class="d-flex flex-row gap-2 mt-3">
+    <div class="d-flex flex-row gap-2 my-3">
         <div>
 
-            <InputCheckbox Value="@vm.LeftArea.IsVisible"
-                ValueExpression="@(() => vm.LeftArea.IsVisible)"
-                ValueChanged="@vm.LeftArea.SetIsVisible" />
+            <MudCheckBox T="bool"
+                Label="Set IsVisible directly"
+                Value="@vm.LeftArea.IsVisible"
+                ValueChanged="@vm.LeftArea.SetIsVisible"
+                Dense
+                Size="@Size.Small"
+                Style="user-select: none;" />
 
             <TextBoxView Field="@vm.LeftField" />
 
         </div>
         <div>
 
-            <InputCheckbox Value="@vm.RightArea.IsVisible"
-                ValueExpression="@(() => vm.RightArea.IsVisible)"
-                ValueChanged="@vm.RightArea.SetIsVisible" />
+            <MudCheckBox T="bool"
+                Label="Toggle Hidden flag in State"
+                Value="@(!vm.RightArea.IsHidden)"
+                ValueChanged="@(async (val) =>
+                {
+                    await vm.RightArea.SetState(val
+                        ? FormElementState.None
+                        : FormElementState.Hidden);
+                })"
+                Dense
+                Size="@Size.Small"
+                Style="user-select: none;" />
 
             <TextBoxView Field="@vm.RightField" />
 
         </div>
     </div>
+
+    <NamedValueTable NamingContext="@vm.TopLevel.NamingContext" />
 }
 
 @code {
     private bool loading = true;
+
+    private async Task Redraw()
+    {
+        await InvokeAsync(StateHasChanged);
+    }
 
     protected override async Task OnInitializedAsync()
     {

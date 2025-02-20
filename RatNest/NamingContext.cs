@@ -2,10 +2,10 @@
 
 public class NamingContext
 {
-    public Dictionary<string, INamedValue> valuesByName = new();
+    private readonly Dictionary<string, INamedValue> valuesByName = new();
     public IReadOnlyDictionary<string, INamedValue> ValuesByName => valuesByName;
 
-    public Dictionary<Guid, INamedValue> valuesByRefId = new();
+    private readonly Dictionary<Guid, INamedValue> valuesByRefId = new();
     public IReadOnlyDictionary<Guid, INamedValue> ValuesByRefId => valuesByRefId;
 
     private void HandleRename(string oldName, string newName)

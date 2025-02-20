@@ -1,0 +1,52 @@
+﻿@implements IDisposable
+
+<MudSimpleTable Striped Outlined Dense>
+    <colgroup>
+        <col style="width: 305px;" />
+    </colgroup>
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>Name</th>
+            <th>Value</th>
+        </tr>
+    </thead>
+    <tbody>
+
+        @foreach (var (name, val) in NamingContext.ValuesByName)
+        {
+            <tr>
+                <td style="font-family: monospace !important;
+                           font-size: 10pt;
+                           font-weight: bold;">
+                    @val.RefId
+                </td>
+                <td>@val.Name</td>
+                <td>@val.Value</td>
+            </tr>
+        }
+
+    </tbody>
+</MudSimpleTable>
+
+@code {
+    [Parameter]
+    public NamingContext NamingContext { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        await base.OnInitializedAsync();
+
+        while (!isDisposed)
+        {
+            await Task.Delay(1000);
+            await InvokeAsync(StateHasChanged);
+        }
+    }
+
+    private bool isDisposed;
+    void IDisposable.Dispose()
+    {
+        isDisposed = true;
+    }
+}

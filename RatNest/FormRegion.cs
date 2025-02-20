@@ -50,6 +50,11 @@ public class FormRegion : FormElementBase, IFormRegion
 
     public override async Task Initialize()
     {
+        StateChanged += async () =>
+        {
+            SetIsVisible(!IsHidden);
+        };
+
         foreach (var element in Elements)
         {
             await element.Initialize();
