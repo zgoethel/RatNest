@@ -5,7 +5,7 @@ public class TextBoxField : InputFieldBase<string>
     private readonly string initialValue;
 
 
-    public TextBoxField(IFormRegion region, string initialValue = "") : base(region)
+    public TextBoxField(IFormRegion region, string initialValue = "", bool resetOnHidden = true) : base(region, resetOnHidden)
     {
         this.initialValue = initialValue;
     }

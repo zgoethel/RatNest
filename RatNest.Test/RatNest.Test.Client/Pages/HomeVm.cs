@@ -21,11 +21,11 @@ public class HomeVm
         LeftArea = new(TopLevel);
         RightArea = new(TopLevel);
 
-        LeftField = new(LeftArea, initialValue: "Hello, world!");
-        RightField = new(RightArea, initialValue: "Foo bar");
+        LeftField = new(LeftArea, initialValue: "");
+        RightField = new(RightArea, initialValue: "");
     }
 
-    private async Task ConfigureLogic(LogicRuleSet logicRules, TextBoxField field, TextBoxField other)
+    private static async Task ConfigureLogic(LogicRuleSet logicRules, TextBoxField field, TextBoxField other)
     {
         {
             var eval = LogicRule.ForState(FormElementState.Required);

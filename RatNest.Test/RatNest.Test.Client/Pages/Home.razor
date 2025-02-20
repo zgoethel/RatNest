@@ -39,6 +39,10 @@ Welcome to your new app.
         await base.OnInitializedAsync();
         
         await vm.Initialize();
+
+        await vm.LeftField.SetValue("Hello, world!");
+        await vm.RightField.SetValue("Foo bar");
+
         loading = false;
     }
 }

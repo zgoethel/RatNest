@@ -5,10 +5,12 @@ namespace RatNest.Elements;
 public abstract class InputFieldBase<T> : FormElementBase
 {
     private readonly LogicRuleSet logicRules;
+    private readonly bool resetOnHidden;
 
-    public InputFieldBase(IFormRegion region) : base(region)
+    public InputFieldBase(IFormRegion region, bool resetOnHidden = true) : base(region)
     {
         logicRules = new(State);
+        this.resetOnHidden = resetOnHidden;
     }
 
     public abstract string DefaultNamePrefix { get; }
@@ -65,13 +67,24 @@ public abstract class InputFieldBase<T> : FormElementBase
         Parent.IsVisibleChanged += CheckIfBecameHidden;
     }
 
-    //TODO Consider value used when a field is hidden
     private async Task CheckIfBecameHidden()
     {
-        if (!prevIsEffectivelyBlank && IsEffectivelyBlank)
+        if (!prevIsEffectivelyBlank && IsEffectivelyBlank && resetOnHidden)
         {
             await Value.SetValue(BlankValue);
         }
         prevIsEffectivelyBlank = IsEffectivelyBlank;
+    }
+
+    public async Task SetValue(T value)
+    {
+        if (resetOnHidden && IsEffectivelyBlank)
+        {
+            return;
+        }
+
+        await Value.SetValue(value);
+
+        await InvokeStateChanged();
     }
 }

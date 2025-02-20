@@ -66,7 +66,7 @@ public static class LogicRuleExtensions
             var value = selectedValues.GetSelected(index);
             var secondValue = selectedValues.GetSelected(secondIndex);
 
-            if (not ^ object.Equals(value.Value, secondValue.Value))
+            if (not ^ Equals(value.Value, secondValue.Value))
             {
                 return evaluator(selectedValues, accumulated, emitMessage);
             }
@@ -86,7 +86,7 @@ public static class LogicRuleExtensions
 
             var value = selectedValues.GetSelected(index);
 
-            if (not ^ object.Equals(value.Value, staticValue))
+            if (not ^ Equals(value.Value, staticValue))
             {
                 return evaluator(selectedValues, accumulated, emitMessage);
             }
