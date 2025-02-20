@@ -12,7 +12,7 @@
             Margin="@Margin.Dense"
             Error="@(!string.IsNullOrEmpty(Field.ValidationMessage))"
             Disabled="@Field.IsDisabled"
-            OnBlur="@(() => { /*Redraw*/ })" />
+            OnBlur="@HandleBlur" />
 
         @if (!string.IsNullOrEmpty(Field.ValidationMessage))
         {
@@ -20,4 +20,12 @@
         }
 
     </div>
+}
+
+@code {
+    // MudBlazor field loses invalid state on blur; force redraw if field
+    // should remain in invalid state
+    private Action HandleBlur => string.IsNullOrEmpty(Field.ValidationMessage)
+        ? EventUtil.AsNonRenderingEventHandler(() => { })
+        : StateHasChanged;
 }
