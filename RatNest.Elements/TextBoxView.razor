@@ -5,9 +5,9 @@
     <div class="d-flex flex-column">
 
         <MudTextField Label="@EffectiveLabel"
-            T="string"
             Value="@Field.Value.Value"
-            ValueChanged="@Field.Value.SetValue"
+            ValueChanged="@(EventUtil.AsNonRenderingEventHandler<string>(
+                async (val) => await Field.Value.SetValue(val)))"
             Variant="@Variant.Outlined"
             Margin="@Margin.Dense"
             Error="@(!string.IsNullOrEmpty(Field.ValidationMessage))"

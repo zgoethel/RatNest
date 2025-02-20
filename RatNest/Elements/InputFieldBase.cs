@@ -84,7 +84,5 @@ public abstract class InputFieldBase<T> : FormElementBase
         }
 
         await Value.SetValue(value);
-
-        await InvokeStateChanged();
     }
 }

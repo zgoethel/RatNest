@@ -25,10 +25,12 @@ public abstract class InputViewBase<TValue, TField> : ComponentBase
             if (prevField is not null)
             {
                 Field.StateChanged -= Redraw;
+                Field.ValueChanged -= Redraw;
             }
             if (Field is not null)
             {
                 Field.StateChanged += Redraw;
+                Field.ValueChanged += Redraw;
             }
         }
         prevField = Field;

@@ -5,9 +5,9 @@
     <div class="d-flex flex-column">
 
         <MudCheckBox Label="@EffectiveLabel"
-            T="bool"
             Value="@Field.Value.Value"
-            ValueChanged="@Field.Value.SetValue"
+            ValueChanged="@(EventUtil.AsNonRenderingEventHandler<bool>(
+                async (val) => await Field.Value.SetValue(val)))"
             Size="@Size.Small"
             Dense
             Error="@(!string.IsNullOrEmpty(Field.ValidationMessage))"

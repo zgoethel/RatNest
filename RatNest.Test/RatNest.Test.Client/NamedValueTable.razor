@@ -33,14 +33,27 @@
     [Parameter]
     public NamingContext NamingContext { get; set; }
 
-    protected override async Task OnInitializedAsync()
-    {
-        await base.OnInitializedAsync();
+    private bool shouldRender = true;
+    protected override bool ShouldRender() => shouldRender;
 
-        while (!isDisposed)
+    protected override void OnAfterRender(bool firstRender)
+    {
+        shouldRender = false;
+
+        base.OnAfterRender(firstRender);
+
+        if (firstRender)
         {
-            await Task.Delay(1000);
-            await InvokeAsync(StateHasChanged);
+            _ = Task.Run(async () =>
+            {
+                while (!isDisposed)
+                {
+                    await Task.Delay(1000);
+
+                    shouldRender = true;
+                    await InvokeAsync(StateHasChanged);
+                }
+            });
         }
     }
 

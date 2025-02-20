@@ -7,8 +7,16 @@
 
 Welcome to your new app.
 
-@if (!loading)
+@if (loading)
 {
+
+    <center>
+        <MudProgressCircular Indeterminate Color="@Color.Primary" />
+    </center>
+
+} else
+{
+
     <div class="d-flex flex-row gap-2 my-3">
         <div>
 
@@ -27,6 +35,7 @@ Welcome to your new app.
     </div>
 
     <NamedValueTable NamingContext="@vm.TopLevel.NamingContext" />
+
 }
 
 @code {
@@ -37,17 +46,21 @@ Welcome to your new app.
         await InvokeAsync(StateHasChanged);
     }
 
-    protected override async Task OnInitializedAsync()
+    protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        await base.OnInitializedAsync();
+        await base.OnAfterRenderAsync(firstRender);
 
-        await vm.Initialize();
+        if (firstRender)
+        {
+            await vm.Initialize();
 
-        await vm.LeftField.SetValue("Hello, world!");
-        await vm.RightField.SetValue("Foo bar");
+            await vm.LeftField.SetValue("Hello, world!");
+            await vm.RightField.SetValue("Foo bar");
 
-        vm.StateChanged += Redraw;
+            vm.StateChanged += Redraw;
 
-        loading = false;
+            loading = false;
+            StateHasChanged();
+        }
     }
 }
