@@ -5,10 +5,6 @@ namespace RatNest.Test.Client.Pages;
 
 public class HomeVm : ViewModelBase
 {
-    public bool Loading { get; private set; } = true;
-
-    public FormRegion TopLevel { get; private set; }
-
     public FormRegion LeftArea { get; private set; }
     public FormRegion RightArea { get; private set; }
 
@@ -18,10 +14,16 @@ public class HomeVm : ViewModelBase
     public TextBoxField LeftField { get; private set; }
     public TextBoxField RightField { get; private set; }
 
-    private void CreateElements()
+    public override async Task Initialize()
     {
-        TopLevel = new(null, topLevel: true);
+        await base.Initialize();
 
+        await LeftField.SetValue("Hello, world!");
+        await RightField.SetValue("Foo bar");
+    }
+
+    protected override void CreateElements()
+    {
         LeftArea = new(TopLevel);
         RightArea = new(TopLevel);
 
@@ -32,6 +34,24 @@ public class HomeVm : ViewModelBase
 
         LeftField = new(LeftArea, initialValue: "");
         RightField = new(RightArea, initialValue: "");
+    }
+
+    protected override async Task ConfigureLogic()
+    {
+        LeftCheck.Value.ValueChanged += async () =>
+        {
+            await LeftArea.SetIsVisible(LeftCheck.Value.Value);
+        };
+
+        RightCheck.Value.ValueChanged += async () =>
+        {
+            await RightArea.SetState(RightCheck.Value.Value
+                ? FormElementState.None
+                : FormElementState.Hidden);
+        };
+
+        await LeftField.ConfigureLogic(async (it) => await ConfigureLogic(it, LeftField, RightField));
+        await RightField.ConfigureLogic(async (it) => await ConfigureLogic(it, RightField, LeftField));
     }
 
     private static async Task ConfigureLogic(LogicRuleSet logicRules, TextBoxField field, TextBoxField other)
@@ -79,43 +99,6 @@ public class HomeVm : ViewModelBase
             var rule = logicRules.CreateLogicRule(eval);
 
             await rule.SetSelectedValues(other.Value);
-        }
-    }
-
-    private async Task ConfigureLogic()
-    {
-        LeftCheck.Value.ValueChanged += async () =>
-        {
-            await LeftArea.SetIsVisible(LeftCheck.Value.Value);
-        };
-
-        RightCheck.Value.ValueChanged += async () =>
-        {
-            await RightArea.SetState(RightCheck.Value.Value
-                ? FormElementState.None
-                : FormElementState.Hidden);
-        };
-
-        await LeftField.ConfigureLogic(async (it) => await ConfigureLogic(it, LeftField, RightField));
-        await RightField.ConfigureLogic(async (it) => await ConfigureLogic(it, RightField, LeftField));
-    }
-
-    public async Task Initialize()
-    {
-        try
-        {
-            CreateElements();
-
-            await ConfigureLogic();
-
-            await TopLevel.Initialize();
-
-            await LeftField.SetValue("Hello, world!");
-            await RightField.SetValue("Foo bar");
-        } finally
-        {
-            Loading = false;
-            await InvokeStateChanged();
         }
     }
 }
