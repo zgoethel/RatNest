@@ -14,7 +14,6 @@ public class TextBoxField : InputFieldBase<string>
 
     public override bool IsBlank => string.IsNullOrEmpty(Value.Value);
 
-    //TODO Reconsider
     public override string BlankValue => initialValue;
 
     public override void Create()

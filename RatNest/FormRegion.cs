@@ -110,24 +110,30 @@ public class FormRegion : FormElementBase, IFormRegion
         }
     }
 
-    //TODO Consider removal of sub-areas
     public bool RemoveElement(FormElementBase element)
     {
-        if (elements.Remove(element))
+        if (!elements.Remove(element))
+        {
+            return false;
+        }
+
+        if (element is IFormRegion region)
+        {
+            foreach (var v in region.GetAllValues())
+            {
+                ValueRemoved?.Invoke(v);
+            }
+
+            IsVisibleChanged -= region.InvokeIsVisibleChanged;
+        } else
         {
             foreach (var v in element.Values)
             {
                 ValueRemoved?.Invoke(v);
             }
-
-            if (element is IFormRegion region)
-            {
-                IsVisibleChanged -= region.InvokeIsVisibleChanged;
-            }
-
-            return true;
         }
-        return false;
+
+        return true;
     }
 
     public event Action<INamedValue> ValueAdded;
