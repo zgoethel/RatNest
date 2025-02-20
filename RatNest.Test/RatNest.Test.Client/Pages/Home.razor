@@ -7,7 +7,7 @@
 
 Welcome to your new app.
 
-@if (loading)
+@if (vm.Loading)
 {
 
     <center>
@@ -22,14 +22,23 @@ Welcome to your new app.
 
             <CheckBoxView Field="@vm.LeftCheck" />
 
-            <TextBoxView Field="@vm.LeftField" />
+            <FormRegionView Region="@vm.LeftArea">
+
+                <TextBoxView Field="@vm.LeftField" />
+
+            </FormRegionView>
 
         </div>
+
         <div>
 
             <CheckBoxView Field="@vm.RightCheck" />
 
-            <TextBoxView Field="@vm.RightField" />
+            <FormRegionView Region="@vm.RightArea">
+
+                <TextBoxView Field="@vm.RightField" />
+
+            </FormRegionView>
 
         </div>
     </div>
@@ -39,8 +48,6 @@ Welcome to your new app.
 }
 
 @code {
-    private bool loading = true;
-
     private async Task Redraw()
     {
         await InvokeAsync(StateHasChanged);
@@ -52,15 +59,9 @@ Welcome to your new app.
 
         if (firstRender)
         {
-            await vm.Initialize();
-
-            await vm.LeftField.SetValue("Hello, world!");
-            await vm.RightField.SetValue("Foo bar");
-
             vm.StateChanged += Redraw;
 
-            loading = false;
-            StateHasChanged();
+            await vm.Initialize();
         }
     }
 }

@@ -1,0 +1,36 @@
+@if (Region.IsVisible)
+{
+    @ChildContent
+}
+
+@code {
+    private FormRegion prevRegion;
+    [Parameter]
+    public FormRegion Region { get; set; }
+
+    [Parameter]
+    public RenderFragment ChildContent { get; set; }
+
+    private async Task Redraw()
+    {
+        await InvokeAsync(StateHasChanged);
+    }
+
+    protected override void OnParametersSet()
+    {
+        base.OnParametersSet();
+
+        if (prevRegion != Region)
+        {
+            if (prevRegion is not null)
+            {
+                Region.StateChanged -= Redraw;
+            }
+            if (Region is not null)
+            {
+                Region.StateChanged += Redraw;
+            }
+        }
+        prevRegion = Region;
+    }
+}
