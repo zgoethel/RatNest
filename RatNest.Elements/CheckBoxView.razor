@@ -1,0 +1,23 @@
+﻿@inherits InputViewBase<bool, CheckBoxField>
+
+@if (!Field.IsEffectivelyBlank)
+{
+    <div class="d-flex flex-column">
+
+        <MudCheckBox Label="@EffectiveLabel"
+            T="bool"
+            Value="@Field.Value.Value"
+            ValueChanged="@Field.Value.SetValue"
+            Size="@Size.Small"
+            Dense
+            Error="@(!string.IsNullOrEmpty(Field.ValidationMessage))"
+            Disabled="@Field.IsDisabled"
+            Style="user-select: none;" />
+
+        @if (!string.IsNullOrEmpty(Field.ValidationMessage))
+        {
+            <MudText Typo="@Typo.body2" Color="@Color.Error">@Field.ValidationMessage</MudText>
+        }
+
+    </div>
+}

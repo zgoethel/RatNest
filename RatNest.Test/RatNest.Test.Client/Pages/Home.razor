@@ -12,31 +12,14 @@ Welcome to your new app.
     <div class="d-flex flex-row gap-2 my-3">
         <div>
 
-            <MudCheckBox T="bool"
-                Label="Set IsVisible directly"
-                Value="@vm.LeftArea.IsVisible"
-                ValueChanged="@vm.LeftArea.SetIsVisible"
-                Dense
-                Size="@Size.Small"
-                Style="user-select: none;" />
+            <CheckBoxView Field="@vm.LeftCheck" />
 
             <TextBoxView Field="@vm.LeftField" />
 
         </div>
         <div>
 
-            <MudCheckBox T="bool"
-                Label="Toggle Hidden flag in State"
-                Value="@(!vm.RightArea.IsHidden)"
-                ValueChanged="@(async (val) =>
-                {
-                    await vm.RightArea.SetState(val
-                        ? FormElementState.None
-                        : FormElementState.Hidden);
-                })"
-                Dense
-                Size="@Size.Small"
-                Style="user-select: none;" />
+            <CheckBoxView Field="@vm.RightCheck" />
 
             <TextBoxView Field="@vm.RightField" />
 
@@ -57,11 +40,13 @@ Welcome to your new app.
     protected override async Task OnInitializedAsync()
     {
         await base.OnInitializedAsync();
-        
+
         await vm.Initialize();
 
         await vm.LeftField.SetValue("Hello, world!");
         await vm.RightField.SetValue("Foo bar");
+
+        vm.StateChanged += Redraw;
 
         loading = false;
     }

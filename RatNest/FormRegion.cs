@@ -50,15 +50,17 @@ public class FormRegion : FormElementBase, IFormRegion
 
     public override async Task Initialize()
     {
-        StateChanged += async () =>
-        {
-            SetIsVisible(!IsHidden);
-        };
-
         foreach (var element in Elements)
         {
             await element.Initialize();
         }
+    }
+
+    public override async Task SetState(FormElementState state, bool forceRedraw = false)
+    {
+        await base.SetState(state, forceRedraw);
+
+        await SetIsVisible(!IsHidden);
     }
 
     private NamingContext namingContext;
@@ -77,12 +79,13 @@ public class FormRegion : FormElementBase, IFormRegion
 
     public async Task SetIsVisible(bool isVisible)
     {
-        var oldIsVisible = IsVisible;
-        IsVisible = isVisible;
-
-        if (oldIsVisible != IsVisible)
+        if (IsVisible != isVisible)
         {
+            IsVisible = isVisible;
+
             await InvokeIsVisibleChanged();
+
+            await InvokeStateChanged();
         }
     }
 

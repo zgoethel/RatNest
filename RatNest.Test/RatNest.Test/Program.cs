@@ -1,3 +1,5 @@
+using MudBlazor.Services;
+using RatNest.Test.Client.Pages;
 using RatNest.Test.Components;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -6,6 +8,9 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddRazorComponents()
     .AddInteractiveWebAssemblyComponents()
     .AddInteractiveServerComponents();
+
+builder.Services.AddMudServices();
+builder.Services.AddTransient<HomeVm>();
 
 var app = builder.Build();
 

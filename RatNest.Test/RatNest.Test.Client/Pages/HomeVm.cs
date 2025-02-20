@@ -5,11 +5,22 @@ namespace RatNest.Test.Client.Pages;
 
 public class HomeVm
 {
+    public event Func<Task> StateChanged;
+
+    private async Task InvokeStateChanged()
+    {
+        await StateChanged.InvokeHandler();
+    }
+
     public FormRegion TopLevel { get; private set; }
 
     public FormRegion LeftArea { get; private set; }
 
     public FormRegion RightArea { get; private set; }
+
+    public CheckBoxField LeftCheck { get; private set; }
+
+    public CheckBoxField RightCheck { get; private set; }
 
     public TextBoxField LeftField { get; private set; }
 
@@ -18,8 +29,14 @@ public class HomeVm
     private void CreateElements()
     {
         TopLevel = new(null, topLevel: true);
+
         LeftArea = new(TopLevel);
+        LeftArea.StateChanged += InvokeStateChanged;
         RightArea = new(TopLevel);
+        RightArea.StateChanged += InvokeStateChanged;
+
+        LeftCheck = new(TopLevel, initialValue: true);
+        RightCheck = new(TopLevel, initialValue: true);
 
         LeftField = new(LeftArea, initialValue: "");
         RightField = new(RightArea, initialValue: "");
@@ -79,6 +96,20 @@ public class HomeVm
 
         await LeftField.ConfigureLogic(async (it) => await ConfigureLogic(it, LeftField, RightField));
         await RightField.ConfigureLogic(async (it) => await ConfigureLogic(it, RightField, LeftField));
+
+        LeftCheck.Value.Rename("Set IsVisible directly");
+        LeftCheck.Value.ValueChanged += async () =>
+        {
+            await LeftArea.SetIsVisible(LeftCheck.Value.Value);
+        };
+
+        RightCheck.Value.Rename("Toggle Hidden flag in State");
+        RightCheck.Value.ValueChanged += async () =>
+        {
+            await RightArea.SetState(RightCheck.Value.Value
+                ? FormElementState.None
+                : FormElementState.Hidden);
+        };
 
         await TopLevel.Initialize();
     }

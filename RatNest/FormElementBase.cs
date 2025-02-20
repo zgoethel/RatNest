@@ -35,7 +35,7 @@ public abstract class FormElementBase
 
     public FormElementState State { get; private set; } = FormElementState.None;
 
-    public async Task SetState(FormElementState state, bool forceRedraw = false)
+    public virtual async Task SetState(FormElementState state, bool forceRedraw = false)
     {
         var oldState = State;
         State = state;
